@@ -3,27 +3,58 @@
 namespace Lastdino\ApprovalFlow\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class ApprovalFlow extends Model
+class ApprovalFlowTask extends Model
 {
-    protected $table = 'approval_flows';
+    protected $table = 'approval_flow_tasks';
 
     protected $fillable = [
-        'name',
-        'description',
-        'flow', // JSON構造 (Drawflowなど)
-        'version',
+        'flow_id',
+        'user_id',
+        'ref_id',
+        'system_type',
+        'status',
+        'is_complete',
+        'node_id',
+        'comment',
+        'msg',
+        'link',
     ];
 
     protected $casts = [
-        'flow' => 'array',
+        'is_complete' => 'boolean',
     ];
 
     /**
-     * このフローを使ったタスク
+     * このタスクが属するフロー定義
      */
-    public function tasks()
+    public function flow()
     {
-        return $this->hasMany(ApprovalFlowTask::class, 'workflow_id');
+        return $this->belongsTo(ApprovalFlow::class, 'flow_id');
+    }
+
+    /**
+     * ターゲットモデル（申請対象）
+     */
+    public function target(): MorphTo
+    {
+        return $this->morphTo(__FUNCTION__, 'system_type', 'ref_id');
+    }
+
+    /**
+     * 申請ユーザー
+     */
+    public function user()
+    {
+        return $this->belongsTo(config('approval-flow.users_model'), 'user_id');
+    }
+
+    /**
+     * 履歴一覧
+     */
+    public function histories()
+    {
+        return $this->hasMany(ApprovalFlowHistory::class, 'flow_task_id');
     }
 }
