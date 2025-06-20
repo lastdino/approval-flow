@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateApprovalFlowHistoriesTable extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('approval_flow_histories', function (Blueprint $table) {
@@ -23,4 +22,4 @@ class CreateApprovalFlowHistoriesTable extends Migration
     {
         Schema::dropIfExists('approval_flow_histories');
     }
-}
+};
