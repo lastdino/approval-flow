@@ -1,0 +1,46 @@
+{
+    "name": "lastdino/approval-flow",
+    "description": "This is my package approval-flow",
+    "keywords": [
+        "Lastdino",
+        "laravel",
+        "approva-flow"
+    ],
+    "homepage": "https://github.com/lastdino/approva-flow",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lastdino",
+            "email": "87484368+lastdino@users.noreply.github.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Lastdino\\ApprovalFlow\\": "src/",
+            "Lastdino\\ApprovalFlow\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lastdino\\ApprovalFlow\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Lastdino\\ApprovalFlow\\ApprovalFlowServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
