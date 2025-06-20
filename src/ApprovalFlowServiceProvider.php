@@ -23,6 +23,10 @@ class ApprovalFlowServiceProvider extends ServiceProvider
             __DIR__.'/../resources/views' => resource_path('views/vendor/approval-flow'),
         ], 'approvalflow-views');
 
+        $this->publishes([
+            __DIR__ . '/../database/migrations' => database_path('migrations'),
+        ], 'approvalflow-migrations');
+
         $this->loadLivewireComponents();
 
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
