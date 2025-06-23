@@ -37,11 +37,11 @@ class Edit extends Component
         }
         $userModel=config('approval-flow.users_model');
         if(!class_exists($userModel)){
-            alert("`user_model` not configured");
+            Flux::toast(variant: 'danger', text:'user_model` not configured');
         }
         $rolesModel=config('approval-flow.roles_model');
         if(!class_exists($rolesModel)){
-            alert("`roles_model` not configured");
+            Flux::toast(variant: 'danger', text:'roles_model` not configured');
         }
         $this->UserList=($userModel)::query()->where('enrollment',true)->get();
         $this->PostList=($rolesModel)::query()->get();
