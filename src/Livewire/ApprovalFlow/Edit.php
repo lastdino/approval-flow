@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\Attributes\Url;
 use Livewire\Attributes\Validate;
 use Lastdino\ApprovalFlow\Models\ApprovalFlow;
+use Flux\Flux;
 
 class Edit extends Component
 {
