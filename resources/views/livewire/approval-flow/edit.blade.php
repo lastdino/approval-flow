@@ -4,24 +4,24 @@
     <link rel="stylesheet" href="{{asset('vendor/approval-flow/approval-flow.css')}}">
 @endpush
 <div>
-    <flux:input label="{{__('Flow name')}}" wire:model="name"/>
+    <flux:input label="{{__('approval-flow::edit.labels.Flow name')}}" wire:model="name"/>
     <div x-data="FlowEditor()" class="p-4" wire:ignore>
         <div class="m-2 flex justify-end">
-            <flux:button variant="primary" @click="saveflow">{{__('Save flow')}}</flux:button>
+            <flux:button variant="primary" @click="saveflow">{{__('approval-flow::edit.buttons.save_flow')}}</flux:button>
         </div>
         <div class="flex flex-row">
             <div class="w-1/4">
                 <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="request">
-                    <span>承認依頼</span>
+                    <span>{{__('approval-flow::edit.nodes.approval_request')}}</span>
                 </div>
                 <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="and">
-                    <span>And承認</span>
+                    <span>{{__('approval-flow::edit.nodes.and_approval')}}</span>
                 </div>
                 <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="or">
-                    <span>Or承認</span>
+                    <span>{{__('approval-flow::edit.nodes.or_approval')}}</span>
                 </div>
                 <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="mail">
-                    <span>メール通知</span>
+                    <span>{{__('approval-flow::edit.nodes.email_notification')}}</span>
                 </div>
             </div>
             <div id="drawflow" class="w-3/4" @dragover="allowDrop($event)" @drop="drop($event)" style="width: 100%; height: 600px; border: 1px solid #ccc;"></div>
@@ -46,7 +46,7 @@
                 100, // y位置
                 'start', // クラス名
                 { type: 'start'}, // データ
-                '<div>申請</div>' // HTMLテンプレート
+                `<div>{{__('approval-flow::edit.nodes.application')}}</div>` // HTMLテンプレート
             );
             this.editor.addNode(
                 'end',
@@ -56,7 +56,7 @@
                 100, // y位置
                 'end', // クラス名
                 {type: 'end'}, // データ
-                '<div>承認</div>' // HTMLテンプレート
+                `<div>{{__('approval-flow::edit.nodes.approval')}}</div>` // HTMLテンプレート
             );
             const fdata=$wire.get('flow_data');
             if(Array.isArray(fdata) && fdata.length > 0){
@@ -105,16 +105,16 @@
                 case 'request':
                     html = `
                         <div>
-                            <div class="title-box">承認依頼</div>
+                            <div class="title-box">{{__('approval-flow::edit.nodes.approval_request')}}</div>
                             <div class="box">
-                                <p>承認者を選択</p>
+                                <p>{{__('approval-flow::edit.fields.select_approver')}}</p>
                                 <select df-post>
-                                    <option value="">承認者を選択</option>
+                                    <option value="">{{__('approval-flow::edit.fields.select_approver')}}</option>
                                     @foreach($PostList as $p)
                     <option value="{{$p->id}}">{{$p->name}}</option>
                                     @endforeach
                     </select>
-                    <p>システム承認者を選択</p>
+                    <p>{{__('approval-flow::edit.fields.select_system_approver')}}</p>
                                 <input type="number" df-system>
                 </div>
             </div>
@@ -125,19 +125,19 @@
                 case 'mail':
                     html = `
                         <div>
-                            <div class="title-box">メール通知</div>
+                            <div class="title-box">{{__('approval-flow::edit.nodes.email_notification')}}</div>
                             <div class="box">
-                                <p>通知先を選択</p>
+                                <p>{{__('approval-flow::edit.fields.select_notification_recipient')}}</p>
                                 <select df-post>
-                                    <option value="">通知先を選択</option>
-                                    <option value="0">申請者</option>
+                                    <option value="">{{__('approval-flow::edit.fields.select_notification_recipient')}}</option>
+                                    <option value="0">{{__('approval-flow::edit.fields.applicant')}}</option>
                                     @foreach($PostList as $p)
                     <option value="{{$p->id}}">{{$p->name}}</option>
                                     @endforeach
                     </select>
-                    <p>システム通知先を選択</p>
+                    <p>{{__('approval-flow::edit.fields.select_system_notification_recipient')}}</p>
                                 <input type="number" df-system>
-                    <p>内容</p>
+                    <p>{{__('approval-flow::edit.fields.content')}}</p>
                     <textarea df-contents></textarea>
                 </div>
             </div>
@@ -148,7 +148,7 @@
                 case 'and':
                     html = `
                         <div>
-                            <div class="title-box">And承認</div>
+                            <div class="title-box">{{__('approval-flow::edit.nodes.and_approval')}}</div>
                         </div>
                     `;
                     output = 2;
@@ -156,7 +156,7 @@
                 case 'or':
                     html = `
                         <div>
-                            <div class="title-box">Or承認</div>
+                            <div class="title-box">{{__('approval-flow::edit.nodes.or_approval')}}</div>
                         </div>
                     `;
                     output = 2;

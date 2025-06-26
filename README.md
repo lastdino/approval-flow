@@ -113,7 +113,7 @@ php artisan vendor:publish --tag="approvalflow-assets"
 </body>
 ```
 
-### ２. モデルの設定
+### 2. モデルの設定
 
 承認フローを使用したいモデルに必要なトレイトを追加します：
 
@@ -133,7 +133,7 @@ class Document extends Model
 }
 ```
 
-### ３. 承認フロータスクの登録
+### 3. 承認フロータスクの登録
 
 `registerApprovalFlowTask`メソッドを使用して承認フロータスクを登録します：
 
@@ -160,7 +160,45 @@ $task = $document->registerApprovalFlowTask(
 
 承認フロータスクが作成されると、設定されたフローデータに基づいて自動的に処理が開始されます。
 
-### 3. ルート設定
+### 4. 承認時と拒否時の振る舞いのカスタマイズ
+
+デフォルトでは、モデルが承認されたとき・拒否されたときに`status`フィールドが更新されますが、これらの振る舞いはモデル側でオーバーライドできます：
+
+```php
+// モデルクラス内でメソッドをオーバーライド
+class Document extends Model
+{
+    use HasApprovalFlow;
+
+    /**
+     * 承認時の振る舞いをカスタマイズ
+     */
+    public function onApproved(): void
+    {
+        // デフォルトの振る舞い
+        $this->update(['status' => 'approved']);
+
+        // 追加の処理例
+        event(new DocumentApproved($this));
+        Mail::to($this->author->email)->send(new DocumentApprovedMail($this));
+    }
+
+    /**
+     * 拒否時の振る舞いをカスタマイズ
+     */
+    public function onRejected(): void
+    {
+        // デフォルトの振る舞い
+        $this->update(['status' => 'rejected']);
+
+        // 追加の処理例
+        event(new DocumentRejected($this));
+        Mail::to($this->author->email)->send(new DocumentRejectedMail($this));
+    }
+}
+```
+
+### 5. ルート設定
 
 パッケージは自動的に `/flow` プレフィックスでルートを登録します。設定ファイルでカスタマイズ可能です。
 
