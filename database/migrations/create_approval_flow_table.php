@@ -28,6 +28,7 @@ return new class extends Migration {
             $table->boolean('is_complete')->default(false);
             $table->unsignedBigInteger('node_id')->nullable(); // 現在のノードID
             $table->text('comment')->nullable(); // 申請者のコメント
+            $table->json('system_roles');
             $table->text('msg')->nullable();     // 通知メッセージ
             $table->string('link')->nullable();  // リンク先URL
             $table->timestamps();

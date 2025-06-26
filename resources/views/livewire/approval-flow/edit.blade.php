@@ -1,6 +1,7 @@
 @push('approval-flow')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.css">
     <script src="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.js"></script>
+    <link rel="stylesheet" href="{{asset('vendor/approval-flow/approval-flow.css')}}">
 @endpush
 <div>
     <flux:input label="{{__('Flow name')}}" wire:model="name"/>
@@ -13,9 +14,6 @@
                 <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="request">
                     <span>承認依頼</span>
                 </div>
-                <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="request_system">
-                    <span>承認依頼(システム)</span>
-                </div>
                 <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="and">
                     <span>And承認</span>
                 </div>
@@ -24,9 +22,6 @@
                 </div>
                 <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="mail">
                     <span>メール通知</span>
-                </div>
-                <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="mail_system">
-                    <span>メール通知(システム)</span>
                 </div>
             </div>
             <div id="drawflow" class="w-3/4" @dragover="allowDrop($event)" @drop="drop($event)" style="width: 100%; height: 600px; border: 1px solid #ccc;"></div>
@@ -119,23 +114,13 @@
                     <option value="{{$p->id}}">{{$p->name}}</option>
                                     @endforeach
                     </select>
+                    <p>システム承認者を選択</p>
+                                <input type="number" df-system>
                 </div>
             </div>
 `;
-                    data = { "post": '' };
+                    data = { "post": '',"system": '' };
                     output = 1;
-                    break;
-                case 'request_system':
-                    html = `
-                        <div>
-                            <div class="title-box">承認依頼(システム)</div>
-                            <div class="box">
-                                <p>承認者を選択</p>
-                                <input type="number" df-system>
-                            </div>
-                            </div>
-`;
-                    data = { "system": '' };
                     break;
                 case 'mail':
                     html = `
@@ -150,29 +135,15 @@
                     <option value="{{$p->id}}">{{$p->name}}</option>
                                     @endforeach
                     </select>
+                    <p>システム通知先を選択</p>
+                                <input type="number" df-system>
                     <p>内容</p>
                     <textarea df-contents></textarea>
                 </div>
             </div>
 `;
-                    data = { "post": '' , "contents": '' };
+                    data = { "post": '' , "contents": '',"system": '' , };
                     output = 1;
-                    break;
-                case 'mail_system':
-                    html = `
-                        <div>
-                            <div class="title-box">メール通知(システム)</div>
-                            <div class="box">
-                                <p>承認者を選択</p>
-                                <input type="number" df-system>
-                                <p>内容</p>
-                                <textarea df-contents></textarea>
-                            </div>
-                        </div>
-`;
-                    data = { "system": '' , "contents": '' };
-                    output = 0;
-                    this.editor.addNode('mail_system', 1,  0, pos_x, pos_y, 'mail_system', data, html );
                     break;
                 case 'and':
                     html = `
@@ -193,16 +164,12 @@
                 default:
             }
 
-
-
             this.editor.addNode(name, input, output, pos_x, pos_y, nodeType, data, html );
         },
 
         saveflow(){
             const workflowData = this.editor.export();
-
-            $wire.saveFlow(workflowData);
-            console.log(workflowData);
+            $wire.save(workflowData);
         },
 
         loadWorkflow(fdata) {

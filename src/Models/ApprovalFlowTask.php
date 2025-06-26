@@ -18,12 +18,14 @@ class ApprovalFlowTask extends Model
         'is_complete',
         'node_id',
         'comment',
+        'system_roles',
         'msg',
         'link',
     ];
 
     protected $casts = [
         'is_complete' => 'boolean',
+        'system_roles' => 'array',
     ];
 
     /**

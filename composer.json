@@ -27,6 +27,12 @@
             "Workbench\\App\\": "workbench/app/"
         }
     },
+    "require": {
+        "php": "^8.0",
+        "illuminate/support": "^12.0",
+        "livewire/livewire": "^3.0",
+        "livewire/flux": "^2.0"
+    },
     "config": {
         "sort-packages": true,
         "allow-plugins": {

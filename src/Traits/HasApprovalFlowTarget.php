@@ -20,16 +20,22 @@ trait HasApprovalFlowTarget
 
     /**
      * ワークフロー申請を登録
+     * @param int $flowId フローID
+     * @param int $authorId 申請者ID
+     * @param string|null $comment コメント
+     * @param array|null $systemRoles システムロール
+     * @return ApprovalFlowTask
      */
-    public function registerWorkflowTask(int $workflowId, int $authorId, ?string $comment = null): ApprovalFlowTask
+    public function registerApprovalFlowTask(int $flowId, int $authorId, ?string $comment = null, ?array $systemRoles = null): ApprovalFlowTask
     {
         $task = ApprovalFlowTask::create([
-            'flow_id'   => $workflowId,
+            'flow_id'       => $flowId,
             'user_id'       => $authorId,
             'ref_id'        => $this->getKey(),
             'system_type'   => static::class,
-            'status'        => '未承認',
+            'status'        => 'Unapproved',
             'is_complete'   => false,
+            'system_roles'  => $systemRoles,
         ]);
 
         if ($comment !== null) {
@@ -38,7 +44,7 @@ trait HasApprovalFlowTarget
 
         $task->save();
 
-        $flowData = ApprovalFlow::findOrFail($workflowId)->flow['drawflow']['Home']['data'] ?? [];
+        $flowData = ApprovalFlow::findOrFail($flowId)->flow ?? [];
 
         app(ApprovalFlowService::class)
             ->processApprovalFlow($flowData, 1, $task, $authorId);
@@ -51,7 +57,7 @@ trait HasApprovalFlowTarget
      */
     public function onApproved(): void
     {
-        $this->update(['status' => '承認済み']);
+        $this->update(['status' => 'approved']);
     }
 
     /**
@@ -59,6 +65,6 @@ trait HasApprovalFlowTarget
      */
     public function onRejected(): void
     {
-        $this->update(['status' => '却下']);
+        $this->update(['status' => 'Rejected']);
     }
 }

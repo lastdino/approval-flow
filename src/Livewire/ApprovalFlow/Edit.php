@@ -5,6 +5,7 @@ namespace Lastdino\ApprovalFlow\Livewire\ApprovalFlow;
 use Livewire\Component;
 use Livewire\Attributes\Url;
 use Livewire\Attributes\Validate;
+use Livewire\Attributes\On;
 use Lastdino\ApprovalFlow\Models\ApprovalFlow;
 use Flux\Flux;
 
@@ -20,7 +21,7 @@ class Edit extends Component
     //ユーザーリスト
     public $UserList=[];
 
-    public function saveFlow($data){
+    public function save($data){
         $validated=$this->validate();
         $validated['flow']=$data;
         ApprovalFlow::updateOrCreate(
