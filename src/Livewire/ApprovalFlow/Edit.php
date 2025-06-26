@@ -15,7 +15,7 @@ class Edit extends Component
     public $flow_id;
     #[Validate('required')]
     public $name;
-    public $flow_data=[];
+    public $flow=[];
     //役職リスト
     public $PostList=[];
     //ユーザーリスト
@@ -35,7 +35,7 @@ class Edit extends Component
         if($this->flow_id){
             $db=ApprovalFlow::find($this->flow_id);
             $this->name=$db->name;
-            $this->flow_data=$db->flow_data;
+            $this->flow=$db->flow;
         }
         $userModel=config('approval-flow.users_model');
         if(!class_exists($userModel)){

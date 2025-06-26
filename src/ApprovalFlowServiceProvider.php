@@ -5,6 +5,8 @@ namespace Lastdino\ApprovalFlow;
 use Illuminate\Support\ServiceProvider;
 use Lastdino\ApprovalFlow\Livewire\ApprovalFlow\Detail;
 use Lastdino\ApprovalFlow\Livewire\ApprovalFlow\Edit;
+use Lastdino\ApprovalFlow\Livewire\ApprovalFlow\FlowList;
+use Lastdino\ApprovalFlow\Livewire\ApprovalFlow\TaskList;
 use Livewire\Livewire;
 use Lastdino\ApprovalFlow\Helpers\UserDisplayHelper;
 
@@ -60,5 +62,7 @@ class ApprovalFlowServiceProvider extends ServiceProvider
     {
         Livewire::component('approval-flow.edit', Edit::class);
         Livewire::component('approval-flow.detail', Detail::class);
+        Livewire::component('approval-flow.flow-list', FlowList::class);
+        Livewire::component('approval-flow.task-list', TaskList::class);
     }
 }

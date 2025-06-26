@@ -33,7 +33,7 @@ trait HasApprovalFlowTarget
             'user_id'       => $authorId,
             'ref_id'        => $this->getKey(),
             'system_type'   => static::class,
-            'status'        => 'Unapproved',
+            'status'        => 'pending',
             'is_complete'   => false,
             'system_roles'  => $systemRoles,
         ]);
@@ -65,6 +65,6 @@ trait HasApprovalFlowTarget
      */
     public function onRejected(): void
     {
-        $this->update(['status' => 'Rejected']);
+        $this->update(['status' => 'rejected']);
     }
 }

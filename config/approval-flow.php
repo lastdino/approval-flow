@@ -61,4 +61,21 @@ return [
     ],
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | Pagination Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure the number of items displayed per page for flow lists and task lists.
+    | - flow_list_per_page: Number of items per page in flow lists
+    | - task_list_per_page: Number of items per page in task lists
+    |
+    */
+    'pagination' => [
+        'flow_list_per_page' => 25,
+        'task_list_per_page' => 25,
+    ],
+
+
+
 ];

@@ -58,8 +58,8 @@
                 {type: 'end'}, // データ
                 `<div>{{__('approval-flow::edit.nodes.approval')}}</div>` // HTMLテンプレート
             );
-            const fdata=$wire.get('flow_data');
-            if(Array.isArray(fdata) && fdata.length > 0){
+            const fdata=$wire.get('flow');
+            if(fdata && typeof fdata === 'object' && Object.keys(fdata).length > 0){
                 this.loadWorkflow(fdata)
             }
         },

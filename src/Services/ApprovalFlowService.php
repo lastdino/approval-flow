@@ -141,7 +141,7 @@ class ApprovalFlowService
 
     public function rejectTask(ApprovalFlowTask $task)
     {
-        $task->update(['status' => 'Rejected', 'is_complete' => true]);
+        $task->update(['status' => 'rejected', 'is_complete' => true]);
 
         $task->link = route(config('approval-flow.routes.prefix').'.detail', $task->id);
         $this->notifyUsers($task->user, $task, '申請却下');
