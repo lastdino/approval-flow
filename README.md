@@ -202,6 +202,13 @@ class Document extends Model
 
 パッケージは自動的に `/flow` プレフィックスでルートを登録します。設定ファイルでカスタマイズ可能です。
 
+デフォルトで使用可能な主要なルート：
+
+- `/flow/task_list` - 承認タスク一覧の表示
+- `/flow/flow_list` - 承認フロー一覧の表示
+- `/flow/edit/{id}` - 承認フローの編集
+- `/flow/detail/{id}` - タスクの詳細表示
+
 ## 設定
 
 ### 必要な依存関係
