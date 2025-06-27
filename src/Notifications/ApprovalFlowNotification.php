@@ -43,11 +43,11 @@ class ApprovalFlowNotification extends Notification
     {
         return (new MailMessage)
             ->subject($this->title)
-            ->line($this->task->msg ?? '承認フロー通知です。')
-            ->action(__('確認する'), $this->task->link ?? url('/'))
-            ->line(__('このメッセージに心当たりがない場合は、このメールを無視してください。'))
-            ->line('ありがとうございます')
-            ->salutation('HSK');
+            ->line($this->title ?? '承認フロー通知です。')
+            ->action(__('approval-flow::mail.confirm'), $this->task->link ?? url('/'))
+            ->line(__('approval-flow::mail.ignore'))
+            ->line(__('approval-flow::mail.thank'))
+            ->salutation(config('approval-flow.notification.salutation'));
     }
 
 

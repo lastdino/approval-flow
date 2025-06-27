@@ -94,5 +94,20 @@ return [
     ],
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | Notification Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure the notification settings used in the approval flow system.
+    | These settings control how notifications are formatted and delivered.
+    |
+    */
+    'notification' => [
+        'salutation' => 'lastdino',
+    ]
+
+
+
 
 ];
