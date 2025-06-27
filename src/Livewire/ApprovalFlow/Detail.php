@@ -52,7 +52,7 @@ class Detail extends Component
 
         // 既に承認または拒否されている場合は管理者判定をfalseにする
         $nodeHistories = $this->task->histories->where('node_id', $this->node);
-        if ($nodeHistories->contains('name', 'Approved') || $nodeHistories->contains('name', 'Rejected')) {
+        if ($nodeHistories->contains('name', 'Approved') || $nodeHistories->contains('name', 'Rejected') || $this->task->is_complete) {
             $this->admin = false;
         }
     }
