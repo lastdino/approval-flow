@@ -33,7 +33,7 @@ class ApprovalFlowServiceProvider extends ServiceProvider
         ], 'approvalflow-migrations');
 
         $this->publishes([
-            __DIR__ . '/../lang' => resource_path('lang/vendor/approval-flow'),
+            __DIR__ . '/../lang' => resource_path('vendor/approval-flow'),
         ],'approvalflow-lang');
 
         $this->loadLivewireComponents();
