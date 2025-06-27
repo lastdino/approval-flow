@@ -8,7 +8,7 @@ use Lastdino\ApprovalFlow\Services\ApprovalFlowService;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Facades\App;
 
-trait HasApprovalFlowTarget
+trait HasApprovalFlow
 {
     /**
      * モデルに紐づく承認タスク（1件）

@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name'); // フロー名
             $table->text('description')->nullable();
-            $table->json('flow'); // Drawflowなど
+            $table->json('flow')->nullable(); // Drawflowなど
             $table->string('version')->nullable();
             $table->timestamps();
         });
@@ -24,11 +24,11 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->unsignedBigInteger('ref_id'); // 多態ターゲットのID
             $table->string('system_type');        // 多態ターゲットのクラス名
-            $table->string('status')->default('未承認');
+            $table->string('status')->default('pending');
             $table->boolean('is_complete')->default(false);
             $table->unsignedBigInteger('node_id')->nullable(); // 現在のノードID
             $table->text('comment')->nullable(); // 申請者のコメント
-            $table->json('system_roles');
+            $table->json('system_roles')->nullable();
             $table->text('msg')->nullable();     // 通知メッセージ
             $table->string('link')->nullable();  // リンク先URL
             $table->timestamps();
