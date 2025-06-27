@@ -21,12 +21,14 @@ return [
         'successfully_registered' => '正常に登録されました',
         'Approved.' => '承認しました',
         'Rejected.' => '却下しました',
-        'You do not have permission.' => '権限がありません',
+        'permission_denied' => '権限がありません',
+        'please_comment' => 'コメントがあれば記載して'
 
     ],
     'buttons' => [
         'approve' => '承認',
-        'reject' => '却下'
+        'reject' => '却下',
+        'save' => '登録'
     ],
     'link'=>[
         'related_link' => '関連リンク'

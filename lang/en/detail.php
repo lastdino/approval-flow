@@ -21,11 +21,13 @@ return [
         'successfully_registered' => 'Successfully registered',
         'Approved.' => 'Approved.',
         'Rejected.' => 'Rejected.',
-        'You do not have permission.' => 'You do not have permission.',
+        'permission_denied' => 'You do not have permission.',
+        'please_comment' => 'Please enter a comment if you have one.'
     ],
     'buttons' => [
         'approve' => 'Approve',
-        'reject' => 'Reject'
+        'reject' => 'Reject',
+        'save' => 'Save'
     ],
     'link'=>[
         'related_link' => 'Related Links'

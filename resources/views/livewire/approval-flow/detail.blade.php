@@ -74,9 +74,47 @@
         {{-- ボタン --}}
         <div class="flex justify-end mt-3 gap-2">
             @if($node && $post && $admin)
-                <flux:button variant="primary" wire:click="approve">{{__('approval-flow::detail.status.approved')}}</flux:button>
-                <flux:button variant="danger" wire:click="reject">{{__('approval-flow::detail.status.rejected')}}</flux:button>
+                <flux:modal.trigger name="approve-modal">
+                    <flux:button variant="primary" >{{__('approval-flow::detail.buttons.approve')}}</flux:button>
+                </flux:modal.trigger>
+                <flux:modal.trigger name="reject-modal">
+                    <flux:button variant="danger" >{{__('approval-flow::detail.buttons.reject')}}</flux:button>
+                </flux:modal.trigger>
+
             @endif
         </div>
     </div>
+
+    <flux:modal name="approve-modal" class="md:w-96">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">承認登録</flux:heading>
+            </div>
+            <flux:textarea
+                label="{{__('approval-flow::detail.labels.comments')}}"
+                placeholder="{{__('approval-flow::detail.messages.please_comment')}}"
+                wire:model="comment"
+            />
+            <div class="flex">
+                <flux:spacer />
+                <flux:button type="submit" variant="primary" wire:click="approve">{{__('approval-flow::detail.buttons.save')}}</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+    <flux:modal name="reject-modal" class="md:w-96">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">却下登録</flux:heading>
+            </div>
+            <flux:textarea
+                label="{{__('approval-flow::detail.labels.comments')}}"
+                placeholder="{{__('approval-flow::detail.messages.please_comment')}}"
+                wire:model="comment"
+            />
+            <div class="flex">
+                <flux:spacer />
+                <flux:button type="submit" variant="primary" wire:click="reject">{{__('approval-flow::detail.buttons.save')}}</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>
