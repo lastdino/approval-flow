@@ -61,7 +61,7 @@
                                     <flux:separator vertical />
                                     <flux:text>{{__('approval-flow::detail.comments.'.$history->name)}}</flux:text>
                                 </div>
-                                <flux:text class="ml-3">{{ $history->comment }}</flux:text>
+                                <flux:text class="ml-3 whitespace-pre-wrap">{{ $history->comment }}</flux:text>
                             </div>
                         @endforeach
                     </div>
