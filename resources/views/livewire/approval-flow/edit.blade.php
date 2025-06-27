@@ -5,6 +5,7 @@
 @endpush
 <div>
     <flux:input label="{{__('approval-flow::edit.labels.Flow name')}}" wire:model="name"/>
+    <flux:input label="{{__('approval-flow::edit.labels.description')}}" wire:model="description"/>
     <div x-data="FlowEditor()" class="p-4" wire:ignore>
         <div class="m-2 flex justify-end">
             <flux:button variant="primary" @click="saveflow">{{__('approval-flow::edit.buttons.save_flow')}}</flux:button>

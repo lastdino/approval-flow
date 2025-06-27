@@ -15,6 +15,10 @@ class Edit extends Component
     public $flow_id;
     #[Validate('required')]
     public $name;
+    #[Validate('nullable')]
+    public $description;
+    #[Validate('nullable')]
+    public $version;
     public $flow=[];
     //役職リスト
     public $PostList=[];
@@ -24,6 +28,7 @@ class Edit extends Component
     public function save($data){
         $validated=$this->validate();
         $validated['flow']=$data;
+        $validated['version']=$validated['version']+1;
         ApprovalFlow::updateOrCreate(
             ['id'=>$this->flow_id],$validated
         );
@@ -35,6 +40,8 @@ class Edit extends Component
         if($this->flow_id){
             $db=ApprovalFlow::find($this->flow_id);
             $this->name=$db->name;
+            $this->description=$db->description;
+            $this->version=$db->version;
             $this->flow=$db->flow;
         }
         $userModel=config('approval-flow.users_model');

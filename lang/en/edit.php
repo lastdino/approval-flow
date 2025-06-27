@@ -3,6 +3,7 @@
 return [
     'labels' => [
         'Flow name' => 'Flow Name',
+        'description' => 'Description'
     ],
     'nodes' => [
         'approval_request' => 'Approval Request',

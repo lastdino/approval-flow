@@ -3,6 +3,7 @@
 return [
     'labels' => [
         'Flow name' => 'フロー名',
+        'description' => '説明'
     ],
     'nodes' => [
         'approval_request' => '承認依頼',

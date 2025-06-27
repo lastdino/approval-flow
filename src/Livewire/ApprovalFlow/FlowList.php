@@ -25,6 +25,14 @@ class FlowList extends Component
         }
     }
 
+    public function save(){
+        $db=ApprovalFlow::create([
+            'name'=>'initial name',
+            'flow'=>[]
+        ]);
+        $this->redirectRoute(config('approval-flow.routes.prefix'). '.edit', ['flow_id' => $db->id]);
+    }
+
     public function setting($id)
     {
         $this->redirectRoute(config('approval-flow.routes.prefix'). '.edit', ['flow_id' => $id]);
