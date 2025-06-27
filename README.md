@@ -168,7 +168,7 @@ $task = $document->registerApprovalFlowTask(
 // タスクをキャンセルする
 $document->cancelApprovalFlowTask(
     userId: Auth::id(),      // キャンセルを実行するユーザーのID（通常は申請者自身）
-    reason: 'キャンセルの理由' // キャンセル理由（オプション）
+    comment: 'キャンセルの理由' // キャンセル理由（オプション）
 );
 ```
 
