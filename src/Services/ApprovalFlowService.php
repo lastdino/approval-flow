@@ -47,7 +47,7 @@ class ApprovalFlowService
         $approved = ApprovalFlowHistory::where('flow_task_id', $task->id)
             ->whereIn('node_id', $inputs)
             ->where('created_at', '>=', $start->created_at)
-            ->where('name', '承認');
+            ->where('name', 'Approved');
 
         if ($needAllApproval) {
             $approved = $approved->distinct('node_id')->count('node_id');
@@ -58,7 +58,7 @@ class ApprovalFlowService
         $rejected = ApprovalFlowHistory::where('flow_task_id', $task->id)
             ->whereIn('node_id', $inputs)
             ->where('created_at', '>=', $start->created_at)
-            ->where('name', '却下')->exists();
+            ->where('name', 'Rejected')->exists();
 
         if (($needAllApproval && $approved === count($inputs)) || (!$needAllApproval && $approved)) {
             $this->next($flow, $flow['drawflow']['Home']['data'][$nodeId]['outputs']['output_1']['connections'], $task, $applicantId, $visited);
@@ -94,7 +94,7 @@ class ApprovalFlowService
             $users = ($rolesModel)::query()->find($post)?->users ?? collect();
         }
         $task->link = route(config('approval-flow.routes.prefix').'.detail', $task->id) . "?node=$nodeId&post=$post";
-        $this->notifyUsers($users, $task, '承認申請');
+        $this->notifyUsers($users, $task, config('approval-flow.notification_titles.approval_request', '承認申請'));
     }
 
     private function handleMail($flow, $nodeId, ApprovalFlowTask $task, $applicantId)
@@ -122,7 +122,7 @@ class ApprovalFlowService
         $task->msg = $flow['drawflow']['Home']['data'][$nodeId]['data']['contents'] ?? '';
         $task->link = route(config('approval-flow.routes.prefix').'.detail', $task->id);
 
-        $this->notifyUsers($users, $task, 'ワークフロー通知');
+        $this->notifyUsers($users, $task,config('approval-flow.notification_titles.workflow_notification', 'ワークフロー通知'));
     }
 
     private function handleEnd($nodeId, ApprovalFlowTask $task)
@@ -136,7 +136,7 @@ class ApprovalFlowService
         $task->target?->onApproved();
 
         $task->link = route(config('approval-flow.routes.prefix').'.detail', $task->id);
-        $this->notifyUsers($task->user, $task, '承認完了');
+        $this->notifyUsers($task->user, $task, config('approval-flow.notification_titles.approval_completed', '承認完了'));
     }
 
     public function rejectTask(ApprovalFlowTask $task)
@@ -144,7 +144,7 @@ class ApprovalFlowService
         $task->update(['status' => 'rejected', 'is_complete' => true]);
 
         $task->link = route(config('approval-flow.routes.prefix').'.detail', $task->id);
-        $this->notifyUsers($task->user, $task, '申請却下');
+        $this->notifyUsers($task->user, $task, config('approval-flow.notification_titles.request_rejected', '申請却下'));
         $task->target?->onRejected();
     }
 

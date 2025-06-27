@@ -76,6 +76,22 @@ return [
         'task_list_per_page' => 25,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Notification Titles Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure the notification titles used in the approval flow system.
+    | These titles are displayed in various notifications sent to users.
+    |
+    */
+    'notification_titles' => [
+        'request_rejected' => '申請却下',        // Request Rejected
+        'approval_request' => '承認申請',        // Approval Request
+        'workflow_notification' => 'ワークフロー通知', // Workflow Notification
+        'approval_completed' => '承認完了',      // Approval Completed
+    ],
+
 
 
 ];
