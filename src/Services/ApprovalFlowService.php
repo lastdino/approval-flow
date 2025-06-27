@@ -86,7 +86,7 @@ class ApprovalFlowService
         }
 
         // systemパラメータがある場合はtaskのsystem_rolesを使用
-        if (isset($flow['drawflow']['Home']['data'][$nodeId]['data']['system']) && !empty($flow['drawflow']['Home']['data'][$nodeId]['data']['system'])) {
+        if (!empty($flow['drawflow']['Home']['data'][$nodeId]['data']['system'])) {
             $users = ($rolesModel)::query()->find($task->system_roles[$flow['drawflow']['Home']['data'][$nodeId]['data']['system']])?->users ?? collect();
             $post = $task->system_roles[$flow['drawflow']['Home']['data'][$nodeId]['data']['system']];
         } else {
