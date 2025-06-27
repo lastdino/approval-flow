@@ -19,8 +19,8 @@ return [
     'messages' => [
         'no_permission' => 'File not displayed due to lack of approval authority',
         'successfully_registered' => 'Successfully registered',
-        'Approved.' => 'Approved.',
-        'Rejected.' => 'Rejected.',
+        'approved' => 'Approved.',
+        'rejected' => 'Rejected.',
         'permission_denied' => 'You do not have permission.',
         'please_comment' => 'Please enter a comment if you have one.'
     ],
