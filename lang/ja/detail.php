@@ -17,7 +17,11 @@ return [
     ],
     'messages' => [
         'no_permission' => '承認権限がないためファイルを表示していません',
-        'successfully_registered' => '正常に登録されました'
+        'successfully_registered' => '正常に登録されました',
+        'Approved.' => '承認しました',
+        'Rejected.' => '却下しました',
+        'You do not have permission.' => '権限がありません',
+
     ],
     'buttons' => [
         'approve' => '承認',

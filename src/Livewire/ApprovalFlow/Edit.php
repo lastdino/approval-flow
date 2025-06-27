@@ -33,7 +33,7 @@ class Edit extends Component
             ['id'=>$this->flow_id],$validated
         );
 
-        Flux::toast(variant: 'success', text: __('Successfully registered.'),);
+        Flux::toast(variant: 'success', text: __('approval-flow::edit.messages.successfully_registered'),);
     }
 
     public function mount(){

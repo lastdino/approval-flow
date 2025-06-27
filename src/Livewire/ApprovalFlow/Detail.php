@@ -52,7 +52,7 @@ class Detail extends Component
 
         // 既に承認または拒否されている場合は管理者判定をfalseにする
         $nodeHistories = $this->task->histories->where('node_id', $this->node);
-        if ($nodeHistories->contains('name', '承認') || $nodeHistories->contains('name', '却下')) {
+        if ($nodeHistories->contains('name', 'Approved') || $nodeHistories->contains('name', 'Rejected')) {
             $this->admin = false;
         }
     }
@@ -64,7 +64,7 @@ class Detail extends Component
     {
         // 権限チェック
         if (!$this->admin) {
-            Flux::toast(variant: 'danger', text: '権限がありません');
+            Flux::toast(variant: 'danger', text: __('approval-flow::detail.messages.permission_denied'));
             return;
         }
 
@@ -91,7 +91,7 @@ class Detail extends Component
         $this->comment = '';
 
         // 成功メッセージを表示
-        Flux::toast(variant: 'success', text: '承認しました');
+        Flux::toast(variant: 'success', text: __('approval-flow::detail.messages.approved'));
         $this->admin = false;
 
         // 最新のタスク情報をリロード
@@ -105,7 +105,7 @@ class Detail extends Component
     {
         // 権限チェック
         if (!$this->admin) {
-            Flux::toast(variant: 'danger', text: '権限がありません');
+            Flux::toast(variant: 'danger', text: __('approval-flow::detail.messages.permission_denied'));
             return;
         }
 
@@ -132,7 +132,7 @@ class Detail extends Component
         $this->comment = '';
 
         // 成功メッセージを表示
-        Flux::toast(variant: 'success', text: '却下しました');
+        Flux::toast(variant: 'success', text: __('approval-flow::detail.messages.rejected'));
         $this->admin = false;
 
         // 最新のタスク情報をリロード

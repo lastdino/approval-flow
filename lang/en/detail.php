@@ -17,7 +17,10 @@ return [
     ],
     'messages' => [
         'no_permission' => 'File not displayed due to lack of approval authority',
-        'successfully_registered' => 'Successfully registered'
+        'successfully_registered' => 'Successfully registered',
+        'Approved.' => 'Approved.',
+        'Rejected.' => 'Rejected.',
+        'You do not have permission.' => 'You do not have permission.',
     ],
     'buttons' => [
         'approve' => 'Approve',

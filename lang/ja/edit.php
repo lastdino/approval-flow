@@ -23,5 +23,8 @@ return [
     ],
     'buttons' => [
         'save_flow' => 'フローを保存'
+    ],
+    'messages' => [
+        'successfully_registered' => '正常に登録されました'
     ]
 ];

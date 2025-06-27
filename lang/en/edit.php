@@ -23,5 +23,8 @@ return [
     ],
     'buttons' => [
         'save_flow' => 'Save Flow'
+    ],
+    'messages' => [
+        'successfully_registered' => 'Successfully registered'
     ]
 ];
