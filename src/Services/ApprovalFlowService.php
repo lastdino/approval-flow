@@ -159,7 +159,7 @@ class ApprovalFlowService
         ]);
     }
 
-    private function notifyUsers($users, $task, $title)
+    public function notifyUsers($users, $task, $title)
     {
         Notification::send($users, new ApprovalFlowNotification($task, $title));
     }

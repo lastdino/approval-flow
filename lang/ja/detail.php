@@ -4,7 +4,8 @@ return [
     'status' => [
         'pending'=>'保留中',
         'approved' => '承認済み',
-        'rejected' => '却下'
+        'rejected' => '却下',
+        'cancelled' => 'キャンセル',
     ],
     'labels' => [
         'flow_name' => 'フロー名',
@@ -33,6 +34,7 @@ return [
     'comments'=>[
         'Approved' => '承認',
         'Rejected' => '却下',
-        'Request'=> '申請'
+        'Request'=> '申請',
+        'Cancelled' => 'キャンセル'
     ]
 ];

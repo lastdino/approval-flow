@@ -2,9 +2,10 @@
 
 return [
     'status' => [
-        'Unapproved'=>'Unapproved',
+        'pending'=>'Pending',
         'approved' => 'Approved',
-        'rejected' => 'Rejected'
+        'rejected' => 'Rejected',
+        'cancelled' => 'Cancelled',
     ],
     'labels' => [
         'flow_name' => 'Flow Name',
@@ -32,6 +33,7 @@ return [
     'comments'=>[
         'Approved' => 'Approved',
         'Rejected' => 'Rejected',
-        'Request'=> 'Request'
+        'Request'=> 'Request',
+        'Cancelled' => 'Cancelled'
     ]
 ];

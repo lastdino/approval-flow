@@ -90,6 +90,7 @@ return [
         'approval_request' => '承認申請',        // Approval Request
         'workflow_notification' => 'ワークフロー通知', // Workflow Notification
         'approval_completed' => '承認完了',      // Approval Completed
+        'request_cancelled' => '申請キャンセル'
     ],
 
 

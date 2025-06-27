@@ -67,4 +67,47 @@ trait HasApprovalFlowTarget
     {
         $this->update(['status' => 'rejected']);
     }
+
+    /**
+     * キャンセル時の振る舞い（必要に応じてモデル側でオーバーライド）
+     */
+    public function onCancelled(): void
+    {
+        $this->update(['status' => 'cancelled']);
+    }
+
+    /**
+     * ワークフロー申請をキャンセル
+     * @param int $userId キャンセルを実行するユーザーID
+     * @param string|null $comment キャンセル理由
+     * @return bool
+     */
+    public function cancelApprovalFlowTask(int $userId, ?string $comment = null): bool
+    {
+        $task = $this->ApprovalFlowTask;
+
+        if (!$task || $task->is_complete) {
+            return false;
+        }
+
+        $task->update([
+            'status' => 'cancelled',
+            'is_complete' => true
+        ]);
+
+        app(ApprovalFlowService::class)->saveHistory(
+            $task->id,
+            $task->node_id,
+            $userId,
+            'Cancelled',
+            $comment
+        );
+
+        $task->link = route(config('approval-flow.routes.prefix').'.detail', $task->id);
+        app(ApprovalFlowService::class)->notifyUsers($task->user, $task, config('approval-flow.notification_titles.request_cancelled', '申請キャンセル'));
+
+        $this->onCancelled();
+
+        return true;
+    }
 }
