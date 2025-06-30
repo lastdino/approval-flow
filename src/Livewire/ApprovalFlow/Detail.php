@@ -91,6 +91,7 @@ class Detail extends Component
         $this->comment = '';
 
         // 成功メッセージを表示
+        Flux::modal('approve-modal')->close();
         Flux::toast(variant: 'success', text: __('approval-flow::detail.messages.approved'));
         $this->admin = false;
 
@@ -132,6 +133,7 @@ class Detail extends Component
         $this->comment = '';
 
         // 成功メッセージを表示
+        Flux::modal('reject-modal')->close();
         Flux::toast(variant: 'success', text: __('approval-flow::detail.messages.rejected'));
         $this->admin = false;
 
