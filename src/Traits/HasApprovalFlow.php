@@ -6,6 +6,7 @@ use Lastdino\ApprovalFlow\Models\ApprovalFlow;
 use Lastdino\ApprovalFlow\Models\ApprovalFlowTask;
 use Lastdino\ApprovalFlow\Services\ApprovalFlowService;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\App;
 
 trait HasApprovalFlow
@@ -16,6 +17,13 @@ trait HasApprovalFlow
     public function ApprovalFlowTask(): MorphOne
     {
         return $this->morphOne(ApprovalFlowTask::class, 'target', 'system_type', 'ref_id');
+    }
+    /**
+     * モデルに紐づく承認タスク（複数件）
+     */
+    public function ApprovalFlowTasks(): MorphMany
+    {
+        return $this->morphMany(ApprovalFlowTask::class, 'target', 'system_type', 'ref_id');
     }
 
     /**
