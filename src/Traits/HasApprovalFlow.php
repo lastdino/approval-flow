@@ -26,7 +26,7 @@ trait HasApprovalFlow
      * @param array|null $systemRoles システムロール
      * @return ApprovalFlowTask
      */
-    public function registerApprovalFlowTask(int $flowId, int $authorId, ?string $comment = null, ?array $systemRoles = null): ApprovalFlowTask
+    public function registerApprovalFlowTask(int $flowId, int $authorId, ?string $comment = null, ?array $systemRoles = null, ?string $link =null): ApprovalFlowTask
     {
         $task = ApprovalFlowTask::create([
             'flow_id'       => $flowId,
@@ -36,6 +36,7 @@ trait HasApprovalFlow
             'status'        => 'pending',
             'is_complete'   => false,
             'system_roles'  => $systemRoles,
+            'link'          => $link,
         ]);
 
         if ($comment !== null) {
