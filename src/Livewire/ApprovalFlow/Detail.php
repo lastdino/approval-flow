@@ -62,6 +62,7 @@ class Detail extends Component
      */
     public function approve()
     {
+        Flux::modal('approve-modal')->close();
         // 権限チェック
         if (!$this->admin) {
             Flux::toast(variant: 'danger', text: __('approval-flow::detail.messages.permission_denied'));
@@ -91,7 +92,6 @@ class Detail extends Component
         $this->comment = '';
 
         // 成功メッセージを表示
-        Flux::modal('approve-modal')->close();
         Flux::toast(variant: 'success', text: __('approval-flow::detail.messages.approved'));
         $this->admin = false;
 
@@ -104,6 +104,7 @@ class Detail extends Component
      */
     public function reject()
     {
+        Flux::modal('reject-modal')->close();
         // 権限チェック
         if (!$this->admin) {
             Flux::toast(variant: 'danger', text: __('approval-flow::detail.messages.permission_denied'));
@@ -133,7 +134,6 @@ class Detail extends Component
         $this->comment = '';
 
         // 成功メッセージを表示
-        Flux::modal('reject-modal')->close();
         Flux::toast(variant: 'success', text: __('approval-flow::detail.messages.rejected'));
         $this->admin = false;
 
