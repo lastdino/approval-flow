@@ -108,15 +108,17 @@ class ApprovalFlowService
             \Log::warning("user_model` not configured");
         }
 
-        $post = $flow['drawflow']['Home']['data'][$nodeId]['data']['post'];
-
-        if($post == 0){
-            $users = ($userModel)::query()->find($applicantId);
-        }elseif (isset($flow['drawflow']['Home']['data'][$nodeId]['data']['system'])){
-            // systemパラメータがある場合はtaskのsystem_rolesを使用
+        // systemパラメータがある場合はtaskのsystem_rolesを使用
+        if (isset($flow['drawflow']['Home']['data'][$nodeId]['data']['system']) && $flow['drawflow']['Home']['data'][$nodeId]['data']['system'] !== '') {
             $users = ($rolesModel)::query()->find($task->system_roles[$flow['drawflow']['Home']['data'][$nodeId]['data']['system']])?->users ?? collect();
-        }else{
-            $users = ($rolesModel)::query()->find($post)?->users ?? collect();
+            $post = $task->system_roles[$flow['drawflow']['Home']['data'][$nodeId]['data']['system']];
+        } else {
+            $post = $flow['drawflow']['Home']['data'][$nodeId]['data']['post'];
+            if($post == 0){
+                $users = ($userModel)::query()->find($applicantId);
+            }else{
+                $users = ($rolesModel)::query()->find($post)?->users ?? collect();
+            }
         }
 
         $task->msg = $flow['drawflow']['Home']['data'][$nodeId]['data']['contents'] ?? '';
