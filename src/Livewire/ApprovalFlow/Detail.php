@@ -62,12 +62,12 @@ class Detail extends Component
      */
     public function approve()
     {
-        Flux::modal('approve-modal')->close();
         // 権限チェック
         if (!$this->admin) {
             Flux::toast(variant: 'danger', text: __('approval-flow::detail.messages.permission_denied'));
             return;
         }
+        Flux::modal('approve-modal')->close();
 
         // 承認履歴を追加
         $this->approvalFlowService->saveHistory(
@@ -104,12 +104,13 @@ class Detail extends Component
      */
     public function reject()
     {
-        Flux::modal('reject-modal')->close();
+
         // 権限チェック
         if (!$this->admin) {
             Flux::toast(variant: 'danger', text: __('approval-flow::detail.messages.permission_denied'));
             return;
         }
+        Flux::modal('reject-modal')->close();
 
         // 却下履歴を追加
         $this->approvalFlowService->saveHistory(
