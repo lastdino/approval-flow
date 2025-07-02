@@ -41,13 +41,32 @@ class ApprovalFlowNotification extends Notification
      */
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage)
-            ->subject($this->title)
-            ->line($this->title ?? '承認フロー通知です。')
+        $mailMessage = (new MailMessage)
+            ->subject($this->title);
+
+        $mailMessage->line($this->task->flow->name);
+
+        $mailMessage->line(__('approval-flow::mail.request_from', ['name' => $this->task->user->name, 'flow' => $this->task->flow->name]));
+        $mailMessage->line(__('approval-flow::mail.check'));
+
+        // タスクのメッセージがある場合は本文に追加
+        if (!empty($this->task->msg)) {
+            $mailMessage->line($this->task->msg);
+        }
+
+        // タスクの詳細情報を追加（必要に応じて）
+        if (isset($this->task->status)) {
+            $mailMessage->line(__('approval-flow::mail.labels.status') . __('approval-flow::mail.status.' . $this->task->status));
+        }
+
+
+
+        return $mailMessage
             ->action(__('approval-flow::mail.confirm'), $this->task->link ?? url('/'))
             ->line(__('approval-flow::mail.ignore'))
             ->line(__('approval-flow::mail.thank'))
             ->salutation(config('approval-flow.notification.salutation'));
+
     }
 
 
