@@ -80,13 +80,9 @@ class Detail extends Component
 
         // フローを進める
         $flow = $this->task->flow->flow;
-        $this->approvalFlowService->next(
-            $flow,
-            $flow['drawflow']['Home']['data'][$this->node]['outputs']['output_1']['connections'],
-            $this->task,
-            $this->task->user_id,
-            [$this->node]
-        );
+
+        $this->approvalFlowService->processNextNodes($flow, $this->node, 'output_1', $this->task, $this->task->user_id, [$this->node]);
+
 
         // コメントをリセット
         $this->comment = '';
@@ -123,13 +119,8 @@ class Detail extends Component
 
         // フローを進める（却下ルート）
         $flow = $this->task->flow->flow;
-        $this->approvalFlowService->next(
-            $flow,
-            $flow['drawflow']['Home']['data'][$this->node]['outputs']['output_1']['connections'],
-            $this->task,
-            $this->task->user_id,
-            [$this->node]
-        );
+
+        $this->approvalFlowService->processNextNodes($flow, $this->node, 'output_1', $this->task, $this->task->user_id, [$this->node]);
 
         // コメントをリセット
         $this->comment = '';
