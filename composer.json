@@ -4,9 +4,9 @@
     "keywords": [
         "Lastdino",
         "laravel",
-        "approva-flow"
+        "approval-flow"
     ],
-    "homepage": "https://github.com/lastdino/approva-flow",
+    "homepage": "https://github.com/lastdino/approval-flow",
     "license": "MIT",
     "authors": [
         {
