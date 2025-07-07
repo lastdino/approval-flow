@@ -9,6 +9,7 @@ use Lastdino\ApprovalFlow\Livewire\ApprovalFlow\FlowList;
 use Lastdino\ApprovalFlow\Livewire\ApprovalFlow\TaskList;
 use Livewire\Livewire;
 use Lastdino\ApprovalFlow\Helpers\UserDisplayHelper;
+use Lastdino\ApprovalFlow\Console\Commands\SendPendingApprovalNotifications;
 
 
 
@@ -41,6 +42,12 @@ class ApprovalFlowServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'approval-flow');
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'approval-flow');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                SendPendingApprovalNotifications::class,
+            ]);
+        }
 
     }
 
