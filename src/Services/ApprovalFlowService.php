@@ -330,6 +330,7 @@ class ApprovalFlowService
     {
 
         $nodeData = $this->getNodeData($flow, $nodeId);
+
         $users = $this->resolveUsersForNode($nodeData, $task, $applicantId);
 
         $task->msg = $nodeData['data']['contents'] ?? '';
@@ -394,7 +395,8 @@ class ApprovalFlowService
      */
     private function hasSystemRole(array $nodeData): bool
     {
-        return isset($nodeData['data']['system']) && !empty($nodeData['data']['system']);
+        return isset($nodeData['data']['system']) &&
+           ($nodeData['data']['system'] !== '' && $nodeData['data']['system'] !== null);
     }
 
     /**
@@ -403,10 +405,10 @@ class ApprovalFlowService
     private function getPostFromNodeData(array $nodeData, ApprovalFlowTask $task): int
     {
         if ($this->hasSystemRole($nodeData)) {
-            return $task->system_roles[$nodeData['data']['system']];
+            return (int) $task->system_roles[$nodeData['data']['system']];
         }
 
-        return $nodeData['data']['post'] ?? 0;
+        return (int) $nodeData['data']['post'] ?? 0;
     }
 
     /**
