@@ -226,7 +226,9 @@ class Document extends Model
 - `/flow/edit/{id}` - 承認フローの編集
 - `/flow/detail/{id}` - タスクの詳細表示
 
-## 設定
+### 6. 承認待ち通知コマンド
+
+未承認タスクのメール通知を送信する`approval-flow:notify-pending`コマンドを提供しています。
 
 ### 必要な依存関係
 
