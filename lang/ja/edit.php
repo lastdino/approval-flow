@@ -11,7 +11,8 @@ return [
         'or_approval' => 'Or承認',
         'email_notification' => 'メール通知',
         'application' => '申請',
-        'approval' => '承認'
+        'approval' => '承認',
+        'resolver' => 'Resolverノード'
     ],
     'fields' => [
         'select_approver' => '承認者を選択',
@@ -19,7 +20,10 @@ return [
         'select_notification_recipient' => '通知先を選択',
         'select_system_notification_recipient' => 'システム通知先を選択',
         'applicant' => '申請者',
-        'content' => '内容'
+        'content' => '内容',
+        'resolver_class' => 'Resolverクラス',
+        'select_resolver' => 'Resolverを選択',
+        'resolver_params_json' => 'Resolverパラメータ(JSON)'
     ],
     'buttons' => [
         'save_flow' => 'フローを保存'

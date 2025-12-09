@@ -21,6 +21,9 @@
                 <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="or">
                     <span>{{__('approval-flow::edit.nodes.or_approval')}}</span>
                 </div>
+                <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="resolver">
+                    <span>{{__('approval-flow::edit.nodes.resolver')}}</span>
+                </div>
                 <div class="drag-drawflow" draggable="true" @dragstart="drag($event)" data-node="mail">
                     <span>{{__('approval-flow::edit.nodes.email_notification')}}</span>
                 </div>
@@ -121,6 +124,26 @@
             </div>
 `;
                     data = { "post": '',"system": '' };
+                    output = 1;
+                    break;
+                case 'resolver':
+                    html = `
+                        <div>
+                            <div class="title-box">{{__('approval-flow::edit.nodes.resolver')}}</div>
+                            <div class="box">
+                                <p>{{__('approval-flow::edit.fields.resolver_class')}}</p>
+                                <select df-resolver_class>
+                                    <option value="">{{__('approval-flow::edit.fields.select_resolver')}}</option>
+                                    @foreach($ResolverList as $class => $label)
+                                        <option value="{{$class}}">{{$label}}</option>
+                                    @endforeach
+                                </select>
+                                <p class="mt-2">{{__('approval-flow::edit.fields.resolver_params_json')}}</p>
+                                <textarea df-params placeholder='{"preferSameDept": true}'></textarea>
+                            </div>
+                        </div>
+                    `;
+                    data = { "resolver_class": '', "params": '' };
                     output = 1;
                     break;
                 case 'mail':

@@ -105,7 +105,21 @@ return [
     */
     'notification' => [
         'salutation' => 'lastdino',
-    ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resolver whitelist
+    |--------------------------------------------------------------------------
+    |
+    | Define allowed Resolver classes for dynamic approver resolution. Keys are
+    | fully-qualified class names, values are human readable labels shown in UI.
+    | Example:
+    |  App\Services\Approval\ApproverResolver::class => '役職・部署ベース',
+    */
+    'resolvers' => [
+        \App\Services\Approval\ApproverResolver::class => '役職・部署ベース',
+    ],
 
 
 

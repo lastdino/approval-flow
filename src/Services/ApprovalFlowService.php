@@ -34,6 +34,7 @@ class ApprovalFlowService
     private const NODE_OR = 'or';
     private const NODE_REQUEST = 'request';
     private const NODE_MAIL = 'mail';
+    private const NODE_RESOLVER = 'resolver';
     private const NODE_END = 'end';
 
     // キャッシュ設定
@@ -116,6 +117,7 @@ class ApprovalFlowService
             self::NODE_OR => $this->handleOr($flow, $nodeId, $task, $applicantId, $visited),
             self::NODE_REQUEST => $this->handleRequest($flow, $nodeId, $task, $applicantId, $visited),
             self::NODE_MAIL => $this->handleMail($flow, $nodeId, $task, $applicantId),
+            self::NODE_RESOLVER => $this->handleResolver($flow, $nodeId, $task, $applicantId),
             self::NODE_END => $this->handleEnd($nodeId, $task),
             default => throw new InvalidNodeException("未定義のノードタイプ: {$node['name']}")
         };
@@ -338,6 +340,82 @@ class ApprovalFlowService
 
         $this->notifyUsers($users, $task, config('approval-flow.notification_titles.workflow_notification', 'ワークフロー通知')
         );
+    }
+
+    /**
+     * Resolver ノードの処理（動的に役職IDを解決して承認依頼を送る）
+     */
+    private function handleResolver(array $flow, int $nodeId, ApprovalFlowTask $task, int $applicantId): void
+    {
+        $nodeData = $this->getNodeData($flow, $nodeId);
+        $resolverClass = $nodeData['data']['resolver_class'] ?? null;
+        $params = $nodeData['data']['params'] ?? [];
+
+        // params が文字列(JSON)なら配列に
+        if (is_string($params)) {
+            try {
+                $decoded = json_decode($params, true, 512, JSON_THROW_ON_ERROR);
+                if (is_array($decoded)) {
+                    $params = $decoded;
+                }
+            } catch (\Throwable $e) {
+                // パラメータがJSONでない場合は空配列として扱う
+                $params = [];
+            }
+        }
+
+        // ホワイトリストチェック
+        $allowed = array_keys((array) config('approval-flow.resolvers', []));
+        if (!$resolverClass || !in_array($resolverClass, $allowed, true)) {
+            Log::warning('未許可のResolverクラス、または未指定です', [
+                'node_id' => $nodeId,
+                'resolver_class' => $resolverClass,
+            ]);
+            return;
+        }
+
+        try {
+            $resolver = app($resolverClass);
+        } catch (\Throwable $e) {
+            Log::error('Resolverのインスタンス化に失敗しました', [
+                'class' => $resolverClass,
+                'error' => $e->getMessage(),
+            ]);
+            return;
+        }
+
+        // 想定インターフェース: resolveRoleId(User $applicant, ApprovalFlowTask $task, array $params): ?int
+        $applicant = $task->user;
+        $roleId = null;
+        try {
+            if (method_exists($resolver, 'resolveRoleId')) {
+                $roleId = (int) ($resolver->resolveRoleId($applicant, $task, (array) $params) ?? 0);
+            }
+        } catch (\Throwable $e) {
+            Log::error('Resolverの実行に失敗しました', [
+                'class' => $resolverClass,
+                'error' => $e->getMessage(),
+            ]);
+            return;
+        }
+
+        if (!$roleId) {
+            Log::warning('Resolverが有効な役職IDを返しませんでした', [
+                'class' => $resolverClass,
+                'node_id' => $nodeId,
+            ]);
+            return;
+        }
+
+        // 役職のユーザーを取得して承認依頼を通知
+        $rolesModel = config('approval-flow.roles_model');
+        $role = class_exists($rolesModel) ? $rolesModel::find($roleId) : null;
+        $users = $role?->users ?? collect();
+
+        // リンクは request と同様、post に役職IDを持たせる
+        $task->link = $this->generateApprovalLink($task, $nodeId, $roleId);
+
+        $this->notifyUsers($users, $task, config('approval-flow.notification_titles.approval_request', '承認申請'));
     }
 
 

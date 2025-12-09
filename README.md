@@ -226,9 +226,43 @@ class Document extends Model
 - `/flow/edit/{id}` - 承認フローの編集
 - `/flow/detail/{id}` - タスクの詳細表示
 
+設定ファイル `config/approval-flow.php` の `routes` セクションで、`prefix`、`middleware`、`guards` を変更できます。
+
+```php
+// config/approval-flow.php
+'routes' => [
+    'prefix' => 'flow',           // 例: 'admin/flow' に変更可能
+    'middleware' => ['web'],      // 例: ['web', 'auth'] などを追加
+    'guards' => ['web'],          // 利用する認証ガード（複数可）
+],
+```
+
+注意:
+- `guards` に設定したガードで認証中のユーザーが承認処理に利用されます。
+- `middleware` に `auth` を追加すると、承認画面へのアクセスをログイン必須にできます。
+
 ### 6. 承認待ち通知コマンド
 
-未承認タスクのメール通知を送信する`approval-flow:notify-pending`コマンドを提供しています。
+未承認タスクのメール通知を送信する `approval-flow:notify-pending` コマンドを提供しています。
+
+手動実行例：
+
+```bash
+php artisan approval-flow:notify-pending
+```
+
+スケジューラへの登録例（定期的に通知を送る場合）：
+
+```php
+// app/Console/Kernel.php
+protected function schedule(Schedule $schedule): void
+{
+    // 毎時実行（頻度は適宜変更してください）
+    $schedule->command('approval-flow:notify-pending')->hourly();
+}
+```
+
+メール送信には Laravel のメール設定（`.env` の `MAIL_` 系設定）が必要です。ローカル開発では Mailhog/HELO などの利用を推奨します。
 
 ### 必要な依存関係
 
@@ -290,6 +324,33 @@ npm run dev
 ```
 
 これにより、フロー編集画面で必要なCSSとJavaScriptが正しく読み込まれます。
+
+## トラブルシューティング（よくあるエラー）
+
+- クラスが見つからない（`Target class [App\Models\User] does not exist.` など）
+  - `config/approval-flow.php` の `users_model` / `roles_model` を実際のクラス名に合わせてください。
+  - 独自のロールモデルを使う場合は `id` と `name` プロパティ（カラム）が必要です。
+
+- マイグレーション関連エラー（テーブルが存在しない）
+  - `php artisan vendor:publish --tag="approvalflow-migrations"` 実行後、`php artisan migrate` を実行してください。
+
+- 画面が崩れる / 404（アセットが読み込まれない）
+  - `php artisan vendor:publish --tag="approvalflow-assets"` を実行し、`npm run build`（開発中は `npm run dev`）でビルドしてください。
+  - Livewire レイアウトに `@stack('approval-flow')` を追加しているか確認してください。
+
+- 認可/認証の問題（403/ログインが反映されない）
+  - `routes.middleware` に `auth` を追加しているか、`routes.guards` が実際に使用するガードと一致しているか確認してください。
+
+- 日付/時刻の表示形式を変えたい
+  - `config/approval-flow.php` の `datetime.formats` を調整してください（例：`'default' => 'Y/m/d H:i'`）。
+
+## 変更履歴（Changelog）
+
+- 2025-12-09
+  - ルート設定を拡張（`routes.guards` のサポート、README にカスタマイズ方法を追記）
+  - 日付/時刻フォーマット設定（`datetime.formats`）を追加
+  - ユーザー表示名のフォールバック（`user.fallback_columns`）を追加
+  - 承認フロー編集画面の改善および翻訳ファイルの更新
 
 ## 貢献
 

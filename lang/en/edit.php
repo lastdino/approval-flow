@@ -11,7 +11,8 @@ return [
         'or_approval' => 'OR Approval',
         'email_notification' => 'Email Notification',
         'application' => 'Application',
-        'approval' => 'Approval'
+        'approval' => 'Approval',
+        'resolver' => 'Resolver Node'
     ],
     'fields' => [
         'select_approver' => 'Select Approver',
@@ -19,7 +20,10 @@ return [
         'select_notification_recipient' => 'Select Notification Recipient',
         'select_system_notification_recipient' => 'Select System Notification Recipient',
         'applicant' => 'Applicant',
-        'content' => 'Content'
+        'content' => 'Content',
+        'resolver_class' => 'Resolver Class',
+        'select_resolver' => 'Select Resolver',
+        'resolver_params_json' => 'Resolver Parameters (JSON)'
     ],
     'buttons' => [
         'save_flow' => 'Save Flow'

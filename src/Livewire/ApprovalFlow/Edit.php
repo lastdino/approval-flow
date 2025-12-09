@@ -24,6 +24,8 @@ class Edit extends Component
     public $PostList=[];
     //ユーザーリスト
     public $UserList=[];
+    // Resolver whitelist (class => label)
+    public $ResolverList=[];
 
     public function save($data){
         $validated=$this->validate();
@@ -54,6 +56,7 @@ class Edit extends Component
         }
         $this->UserList=($userModel)::query()->where('enrollment',true)->get();
         $this->PostList=($rolesModel)::query()->get();
+        $this->ResolverList = (array) config('approval-flow.resolvers', []);
         //$this->PostList=Role::where('authority',true)->get();
     }
 
