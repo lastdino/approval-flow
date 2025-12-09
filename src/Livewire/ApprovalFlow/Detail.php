@@ -50,10 +50,23 @@ class Detail extends Component
         $roleId = (int)$this->post;
         $this->admin = auth()->user()?->roles->contains('id', $roleId);
 
-        // 既に承認または拒否されている場合は管理者判定をfalseにする
+        // 既に承認または拒否されている場合の制御
         $nodeHistories = $this->task->histories->where('node_id', $this->node);
-        if ($nodeHistories->contains('name', 'Approved') || $nodeHistories->contains('name', 'Rejected') || $this->task->is_complete) {
-            $this->admin = false;
+
+        // 現在ノードが Resolver の場合は、チェーン継続中の「過去の承認」が存在しても次の承認者が操作できるようにする。
+        $flowData = $this->task->flow->flow ?? [];
+        $isResolver = ($flowData['drawflow']['Home']['data'][$this->node]['name'] ?? null) === 'resolver';
+
+        if ($isResolver) {
+            // Resolver ノードでは「却下」またはタスク完了時のみブロック
+            if ($nodeHistories->contains('name', 'Rejected') || $this->task->is_complete) {
+                $this->admin = false;
+            }
+        } else {
+            // 従来ノードでは承認/却下/完了でブロック
+            if ($nodeHistories->contains('name', 'Approved') || $nodeHistories->contains('name', 'Rejected') || $this->task->is_complete) {
+                $this->admin = false;
+            }
         }
     }
 
