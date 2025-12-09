@@ -364,8 +364,27 @@ class ApprovalFlowService
             }
         }
 
-        // ホワイトリストチェック
-        $allowed = array_keys((array) config('approval-flow.resolvers', []));
+        // ホワイトリスト取得
+        $allowedMap = (array) config('approval-flow.resolvers', []);
+        $allowed = array_keys($allowedMap);
+
+        // 一部の環境でバックスラッシュが欠落して渡るケースに対応（例: "AppServicesApprovalApproverResolver"）
+        // 正規化関数: バックスラッシュ/スラッシュを除去した文字列で比較し、合致した実クラスに補正
+        $normalize = static function ($s): string {
+            return preg_replace('/[\\\\\/]/', '', (string) $s);
+        };
+
+        if ($resolverClass) {
+            $normalizedInput = $normalize($resolverClass);
+            foreach ($allowed as $candidate) {
+                if ($normalizedInput === $normalize($candidate)) {
+                    $resolverClass = $candidate; // 実クラスへ補正
+                    break;
+                }
+            }
+        }
+
+        // ホワイトリストチェック（補正後）
         if (!$resolverClass || !in_array($resolverClass, $allowed, true)) {
             Log::warning('未許可のResolverクラス、または未指定です', [
                 'node_id' => $nodeId,
@@ -384,38 +403,8 @@ class ApprovalFlowService
             return;
         }
 
-        // 想定インターフェース: resolveRoleId(User $applicant, ApprovalFlowTask $task, array $params): ?int
-        $applicant = $task->user;
-        $roleId = null;
-        try {
-            if (method_exists($resolver, 'resolveRoleId')) {
-                $roleId = (int) ($resolver->resolveRoleId($applicant, $task, (array) $params) ?? 0);
-            }
-        } catch (\Throwable $e) {
-            Log::error('Resolverの実行に失敗しました', [
-                'class' => $resolverClass,
-                'error' => $e->getMessage(),
-            ]);
-            return;
-        }
-
-        if (!$roleId) {
-            Log::warning('Resolverが有効な役職IDを返しませんでした', [
-                'class' => $resolverClass,
-                'node_id' => $nodeId,
-            ]);
-            return;
-        }
-
-        // 役職のユーザーを取得して承認依頼を通知
-        $rolesModel = config('approval-flow.roles_model');
-        $role = class_exists($rolesModel) ? $rolesModel::find($roleId) : null;
-        $users = $role?->users ?? collect();
-
-        // リンクは request と同様、post に役職IDを持たせる
-        $task->link = $this->generateApprovalLink($task, $nodeId, $roleId);
-
-        $this->notifyUsers($users, $task, config('approval-flow.notification_titles.approval_request', '承認申請'));
+        // B案: チェーン型Resolverの開始
+        $this->startResolverChain($resolver, $params, $flow, $nodeId, $task);
     }
 
 
@@ -517,6 +506,122 @@ class ApprovalFlowService
         foreach ($connections as $connection) {
             $this->processApprovalFlow($flow, $connection['node'], $task, $applicantId, $visited);
         }
+    }
+
+    /**
+     * Resolverノードか判定
+     */
+    private function isResolverNode(array $flow, int $nodeId): bool
+    {
+        $node = $this->getNodeData($flow, $nodeId);
+        return ($node['name'] ?? null) === self::NODE_RESOLVER;
+    }
+
+    /**
+     * チェーン型Resolverを開始し、最初の承認者に通知する
+     */
+    private function startResolverChain(object $resolver, array $params, array $flow, int $nodeId, ApprovalFlowTask $task): void
+    {
+        $applicant = $task->user;
+        $chain = [];
+
+        try {
+            if (method_exists($resolver, 'buildRoleChain')) {
+                $chain = (array) $resolver->buildRoleChain($applicant, $task, (array) $params);
+            } elseif (method_exists($resolver, 'resolveRoleId')) {
+                $roleId = (int) ($resolver->resolveRoleId($applicant, $task, (array) $params) ?? 0);
+                if ($roleId) { $chain = [$roleId]; }
+            }
+        } catch (\Throwable $e) {
+            Log::error('Resolverの実行に失敗しました', [
+                'node_id' => $nodeId,
+                'error' => $e->getMessage(),
+            ]);
+            return;
+        }
+
+        if (empty($chain)) {
+            Log::warning('Resolverが有効な役職チェーンを返しませんでした', [
+                'node_id' => $nodeId,
+            ]);
+            return;
+        }
+
+        // チェーン状態をタスクに保存（system_roles フィールドを利用）
+        $state = $task->system_roles ?? [];
+        $state['resolver_chains'] = $state['resolver_chains'] ?? [];
+        $state['resolver_chains'][(string) $nodeId] = [
+            'chain' => array_values(array_map('intval', $chain)),
+            'pos' => 0,
+        ];
+        $task->system_roles = $state;
+        $task->save();
+
+        // 最初の承認者に通知
+        $this->notifyResolverChainCurrent($task, $nodeId);
+    }
+
+    /**
+     * Resolverチェーンの現在位置の承認者に通知する
+     */
+    private function notifyResolverChainCurrent(ApprovalFlowTask $task, int $nodeId): void
+    {
+        $state = $task->system_roles ?? [];
+        $nodeState = $state['resolver_chains'][(string) $nodeId] ?? null;
+        if (!$nodeState) { return; }
+
+        $chain = $nodeState['chain'] ?? [];
+        $pos = (int) ($nodeState['pos'] ?? 0);
+        if (!isset($chain[$pos])) { return; }
+
+        $roleId = (int) $chain[$pos];
+        $rolesModel = config('approval-flow.roles_model');
+        $role = class_exists($rolesModel) ? $rolesModel::find($roleId) : null;
+        $users = $role?->users ?? collect();
+
+        $task->link = $this->generateApprovalLink($task, $nodeId, $roleId);
+        $this->notifyUsers($users, $task, config('approval-flow.notification_titles.approval_request', '承認申請'));
+    }
+
+    /**
+     * Resolverチェーンを次に進める。次があれば通知して true、完了なら状態を消して false を返す。
+     */
+    public function continueResolverChainIfAny(array $flow, int $nodeId, ApprovalFlowTask $task): bool
+    {
+        if (!$this->isResolverNode($flow, $nodeId)) {
+            return false;
+        }
+
+        $state = $task->system_roles ?? [];
+        $nodeKey = (string) $nodeId;
+        $nodeState = $state['resolver_chains'][$nodeKey] ?? null;
+        if (!$nodeState) {
+            return false;
+        }
+
+        $chain = $nodeState['chain'] ?? [];
+        $pos = (int) ($nodeState['pos'] ?? 0);
+
+        $pos++;
+        if ($pos < count($chain)) {
+            // 進めて通知
+            $state['resolver_chains'][$nodeKey]['pos'] = $pos;
+            $task->system_roles = $state;
+            $task->save();
+
+            $this->notifyResolverChainCurrent($task, $nodeId);
+            return true; // まだ同一ノード内の承認待ち
+        }
+
+        // 完了: 状態削除
+        unset($state['resolver_chains'][$nodeKey]);
+        if (empty($state['resolver_chains'])) {
+            unset($state['resolver_chains']);
+        }
+        $task->system_roles = $state;
+        $task->save();
+
+        return false;
     }
 
     /**

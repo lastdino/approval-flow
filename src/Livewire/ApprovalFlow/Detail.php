@@ -78,10 +78,26 @@ class Detail extends Component
             $this->comment
         );
 
-        // フローを進める
+        // フローを進める（B案: Resolverチェーン対応）
         $flow = $this->task->flow->flow;
 
-        $this->approvalFlowService->processNextNodes($flow, $this->node, 'output_1', $this->task, $this->task->user_id, [$this->node]);
+        // 現在ノードが Resolver で、チェーンの残りがある場合は次の承認者へ通知して同ノードで継続
+        if ($this->approvalFlowService->continueResolverChainIfAny($flow, (int) $this->node, $this->task)) {
+            // コメントをリセット
+            $this->comment = '';
+
+            // 同一ノード内で次の承認者待ちに切り替え
+            Flux::toast(variant: 'success', text: __('approval-flow::detail.messages.approved'));
+            $this->admin = false;
+
+            // 最新のタスク情報をリロード
+            $this->task = $this->task->fresh()->load('user', 'histories.user', 'flow');
+
+            return; // 下流ノードへは進まない
+        }
+
+        // チェーンが無い or チェーン完了 → 次のノードへ
+        $this->approvalFlowService->processNextNodes($flow, (int) $this->node, 'output_1', $this->task, $this->task->user_id, [$this->node]);
 
 
         // コメントをリセット
