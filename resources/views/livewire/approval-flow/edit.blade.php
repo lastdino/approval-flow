@@ -1,8 +1,69 @@
-@push('approval-flow')
+<?php
+
+use Lastdino\ApprovalFlow\Models\ApprovalFlow;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
+use Livewire\Attributes\Validate;
+use Livewire\Component;
+use Flux\Flux;
+
+new class extends Component
+{
+    #[Url]
+    public $flow_id;
+    #[Validate('required')]
+    public $name;
+    #[Validate('nullable')]
+    public $description;
+    #[Validate('nullable')]
+    public $version;
+    public $flow=[];
+    //役職リスト
+    public $PostList=[];
+    //ユーザーリスト
+    public $UserList=[];
+    // Resolver whitelist (class => label)
+    public $ResolverList=[];
+
+    public function save($data){
+        $validated=$this->validate();
+        $validated['flow']=$data;
+        $validated['version']=$validated['version']+1;
+        ApprovalFlow::updateOrCreate(
+            ['id'=>$this->flow_id],$validated
+        );
+
+        Flux::toast(variant: 'success', text: __('approval-flow::edit.messages.successfully_registered'),);
+    }
+
+    public function mount(){
+        if($this->flow_id){
+            $db=ApprovalFlow::find($this->flow_id);
+            $this->name=$db->name;
+            $this->description=$db->description;
+            $this->version=$db->version;
+            $this->flow=$db->flow;
+        }
+        $userModel=config('approval-flow.users_model');
+        if(!class_exists($userModel)){
+            Flux::toast(variant: 'danger', text:'user_model` not configured');
+        }
+        $rolesModel=config('approval-flow.roles_model');
+        if(!class_exists($rolesModel)){
+            Flux::toast(variant: 'danger', text:'roles_model` not configured');
+        }
+        $this->UserList=($userModel)::query()->where('enrollment',true)->get();
+        $this->PostList=($rolesModel)::query()->get();
+        $this->ResolverList = (array) config('approval-flow.resolvers', []);
+        //$this->PostList=Role::where('authority',true)->get();
+    }
+}; ?>
+
+@assets
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.css">
     <script src="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.js"></script>
     <link rel="stylesheet" href="{{asset('vendor/approval-flow/approval-flow.css')}}">
-@endpush
+@endassets
 <div>
     <flux:input label="{{__('approval-flow::edit.labels.Flow name')}}" wire:model="name"/>
     <flux:input label="{{__('approval-flow::edit.labels.description')}}" wire:model="description"/>

@@ -1,3 +1,75 @@
+<?php
+
+use Lastdino\ApprovalFlow\Models\ApprovalFlowTask;
+use Lastdino\ApprovalFlow\Models\ApprovalFlow;
+use Livewire\Attributes\Url;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
+use Livewire\WithPagination;
+
+new class extends Component
+{
+    use WithPagination;
+
+    #[Url]
+    public $flowId = null;
+    #[Url]
+    public $status = null;
+
+
+    public $search = '';
+    public $sortBy = 'created_at';
+    public $sortDirection = 'desc';
+
+
+    public function mount($flowId = null)
+    {
+        $this->flowId = $flowId;
+    }
+
+    public function sort($column) {
+        if ($this->sortBy === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = 'asc';
+        }
+    }
+
+    public function detail($id){
+        $this->redirectRoute(config('approval-flow.routes.prefix'). '.detail', ['task' => $id]);
+    }
+
+    #[Computed]
+    public function tasks()
+    {
+        $perPage = config('approval-flow.pagination.task_list_per_page', 25);
+        return ApprovalFlowTask::query()
+            ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
+            ->tap(fn ($query) => $this->flowId ? $query->where('flow_id', $this->flowId) : $query)
+            ->tap(fn ($query) => $this->status ? $query->where('status', $this->status) : $query)
+            ->tap(fn ($query) => $this->search ? $query->with(['flow', 'user'])->where(function($q) {
+                $q->whereHas('flow', function($q) {
+                    $q->where('name', 'like', '%' . $this->search . '%');
+                })->orWhereHas('user', function($q) {
+                    $q->where('name', 'like', '%' . $this->search . '%');
+                });
+            }) : $query)
+            ->paginate($perPage);
+    }
+
+    #[Computed]
+    public function flows()
+    {
+        return ApprovalFlow::all();
+    }
+
+    public function resetFilters()
+    {
+        $this->reset(['search', 'flowId', 'status']);
+    }
+}; ?>
+
 <div>
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,7 +85,7 @@
                 <div class="flex flex-wrap items-end gap-4">
                     <flux:select wire:model.live="flowId" label="{{ __('approval-flow::task-list.flow') }}">
                         <flux:select.option value="">{{ __('approval-flow::task-list.all') }}</flux:select.option>
-                        @foreach($flows as $flow)
+                        @foreach($this->flows as $flow)
                             <flux:select.option value="{{ $flow->id }}">{{ $flow->name }}</flux:select.option>
                         @endforeach
                     </flux:select>

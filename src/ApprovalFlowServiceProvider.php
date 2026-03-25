@@ -3,23 +3,17 @@
 namespace Lastdino\ApprovalFlow;
 
 use Illuminate\Support\ServiceProvider;
-use Lastdino\ApprovalFlow\Livewire\ApprovalFlow\Detail;
-use Lastdino\ApprovalFlow\Livewire\ApprovalFlow\Edit;
-use Lastdino\ApprovalFlow\Livewire\ApprovalFlow\FlowList;
-use Lastdino\ApprovalFlow\Livewire\ApprovalFlow\TaskList;
-use Livewire\Livewire;
-use Lastdino\ApprovalFlow\Helpers\UserDisplayHelper;
 use Lastdino\ApprovalFlow\Console\Commands\SendPendingApprovalNotifications;
-
-
+use Lastdino\ApprovalFlow\Helpers\UserDisplayHelper;
+use Livewire\Livewire;
 
 class ApprovalFlowServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
         $this->publishes([
-            __DIR__ . '/../config/approval-flow.php' => config_path('approval-flow.php'),
-        ],'approvalflow-config');
+            __DIR__.'/../config/approval-flow.php' => config_path('approval-flow.php'),
+        ], 'approvalflow-config');
 
         $this->publishes([
             __DIR__.'/../resources/css/approval-flow.css' => public_path('vendor/approval-flow/approval-flow.css'),
@@ -30,12 +24,12 @@ class ApprovalFlowServiceProvider extends ServiceProvider
         ], 'approvalflow-views');
 
         $this->publishes([
-            __DIR__ . '/../database/migrations' => database_path('migrations'),
+            __DIR__.'/../database/migrations' => database_path('migrations'),
         ], 'approvalflow-migrations');
 
         $this->publishes([
-            __DIR__ . '/../lang' => lang_path('vendor/approval-flow'),
-        ],'approvalflow-lang');
+            __DIR__.'/../lang' => lang_path('vendor/approval-flow'),
+        ], 'approvalflow-lang');
 
         $this->loadLivewireComponents();
 
@@ -54,12 +48,12 @@ class ApprovalFlowServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/approval-flow.php',
+            __DIR__.'/../config/approval-flow.php',
             'approval-flow'
         );
 
         $this->app->singleton('approval-flow.user-display', function () {
-            return new UserDisplayHelper();
+            return new UserDisplayHelper;
         });
 
     }
@@ -67,9 +61,15 @@ class ApprovalFlowServiceProvider extends ServiceProvider
     // custom methods for livewire components
     protected function loadLivewireComponents(): void
     {
-        Livewire::component('approval-flow.edit', Edit::class);
-        Livewire::component('approval-flow.detail', Detail::class);
-        Livewire::component('approval-flow.flow-list', FlowList::class);
-        Livewire::component('approval-flow.task-list', TaskList::class);
+        Livewire::addNamespace('approval-flow', __DIR__.'/../resources/views/livewire/approval-flow');
+
+        // もし公開されたビューがあれば、そちらを優先するようにLivewireコンポーネントを再登録
+        $publishedPath = resource_path('views/vendor/approval-flow/livewire/approval-flow');
+        if (is_dir($publishedPath)) {
+            $files = array_diff(scandir($publishedPath), ['.', '..']);
+            if (count($files) > 0) {
+                Livewire::addNamespace('approval-flow', $publishedPath);
+            }
+        }
     }
 }

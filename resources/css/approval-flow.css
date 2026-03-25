@@ -1,3 +1,5 @@
+@source "../resources";
+
 :root {
     --border-color: #cacaca;
     --background-color: #ffffff;
