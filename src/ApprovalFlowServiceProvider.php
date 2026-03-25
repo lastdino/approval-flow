@@ -61,10 +61,10 @@ class ApprovalFlowServiceProvider extends ServiceProvider
     // custom methods for livewire components
     protected function loadLivewireComponents(): void
     {
-        Livewire::addNamespace('approval-flow', __DIR__.'/../resources/views/livewire/approval-flow');
+        Livewire::addNamespace('approval-flow', __DIR__.'/../resources/views/pages');
 
         // もし公開されたビューがあれば、そちらを優先するようにLivewireコンポーネントを再登録
-        $publishedPath = resource_path('views/vendor/approval-flow/livewire/approval-flow');
+        $publishedPath = resource_path('views/vendor/approval-flow/pages');
         if (is_dir($publishedPath)) {
             $files = array_diff(scandir($publishedPath), ['.', '..']);
             if (count($files) > 0) {
