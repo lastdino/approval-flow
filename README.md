@@ -103,14 +103,10 @@ php artisan vendor:publish --tag="approvalflow-assets"
 
 ### 1. Livewireレイアウトの設定
 
-使用しているLivewireレイアウトファイルの`<body>`タグの上部に以下のスタックディレクティブを追加してください：
+プロジェクトに Tailwind がすでにインストールされている場合は、resources/css/app.css ファイルに次の構成を追加するだけです。
 
-```blade
-<!-- resources/views/layouts/app.blade.php または他のレイアウトファイル -->
-@stack('approval-flow')
-<body>
-    <!-- 残りのレイアウト内容 -->
-</body>
+```bash
+@import '../../vendor/lastdino/monox/dist/monox.css';
 ```
 
 ### 2. モデルの設定
